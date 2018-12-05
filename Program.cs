@@ -10,8 +10,10 @@ namespace Advent_of_Code
     {
         static void Main(string[] args)
         {
-            Console.WriteLine(Day01.FrequencyProblem());
-            Console.WriteLine(Day01.RepeatedFrequencyProblem());
+            //Console.WriteLine("Day 1 Part 1: " + Day01.Part01());
+            //Console.WriteLine("Day 1 Part 2: " + Day01.Part02());
+            //Console.WriteLine("Day 2 Part 1: " + Day02.Part01());
+            Console.WriteLine("Day 2 Part 2: " + Day02.Part02());
             Console.ReadLine();
         }
 
