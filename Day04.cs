@@ -123,10 +123,52 @@ namespace Advent_of_Code
             var sleepiestGuardId = guardTotalSleep.FirstOrDefault(g => g.Value == TimeAsleep).Key;
 
             var sleepiestGuardsEntries = entries.Where(e => e.GuardId == sleepiestGuardId).ToList();
+
+            var (minuteAsleep, Frequency) = GetMinuteGuardSleepsMostOften(sleepiestGuardId, sleepiestGuardsEntries);
+                      
+
+            return minuteAsleep * sleepiestGuardId;
+        }
+
+        public class SleepingWindow
+        {
+            public DateTime SleepTime { get; set; }
+            public DateTime WakeTime { get; set; }
+            public TimeSpan SleepLength { get; set; }
+        }
+
+        public static int Part02()
+        {
+            var entries = MapEntries();
+            var distinctGuardIds = entries.Select(e => e.GuardId).Distinct().ToList();
+            var highestFreq = 0;
+            var answerGuard = 0;
+            var answerMinute = 0;
+
+            foreach(var id in distinctGuardIds)
+            {
+                var guardEntries = entries.Where(e => e.GuardId == id).ToList();
+                var (minuteAsleep, Frequency) = GetMinuteGuardSleepsMostOften(id, guardEntries);
+                
+                if(highestFreq < Frequency)
+                {
+                    highestFreq = Frequency;
+                    answerGuard = id;
+                    answerMinute = minuteAsleep;
+                }
+
+            }
+
+            return answerGuard * answerMinute;
+
+        }
+
+        public static (int minuteAsleep, int Frequency)GetMinuteGuardSleepsMostOften(int guardId, List<Entry> guardEntries)
+        {
             var sleepingWindows = new List<SleepingWindow>();
             var tempSleepDateTime = new DateTime();
             var tempWakeDateTime = new DateTime();
-            foreach (var entry in sleepiestGuardsEntries)
+            foreach (var entry in guardEntries)
             {
                 if (entry.EntryType == EntryType.FallsAsleep)
                 {
@@ -147,9 +189,9 @@ namespace Advent_of_Code
 
             var minutesSleepingFrequency = new Dictionary<int, int>();
 
-            foreach(var window in sleepingWindows)
+            foreach (var window in sleepingWindows)
             {
-                for(int i = window.SleepTime.Minute; i < window.WakeTime.Minute; i++)
+                for (int i = window.SleepTime.Minute; i < window.WakeTime.Minute; i++)
                 {
                     if (minutesSleepingFrequency.ContainsKey(i))
                     {
@@ -164,18 +206,18 @@ namespace Advent_of_Code
                 }
             }
 
-            var maxFreq = minutesSleepingFrequency.Values.Max();
-            var mostFrequentlyMinuteAsleep = minutesSleepingFrequency.FirstOrDefault(s => s.Value == maxFreq).Key;
+            var maxFreq = 0;
 
+            var mostFrequentlyMinuteAsleep = 0;
 
-            return mostFrequentlyMinuteAsleep * sleepiestGuardId;
-        }
+            if (minutesSleepingFrequency.Values.Count > 0)
+            {
+                maxFreq = minutesSleepingFrequency.Values.Max();
+                mostFrequentlyMinuteAsleep = minutesSleepingFrequency.FirstOrDefault(s => s.Value == maxFreq).Key;
+            }
+           
 
-        public class SleepingWindow
-        {
-            public DateTime SleepTime { get; set; }
-            public DateTime WakeTime { get; set; }
-            public TimeSpan SleepLength { get; set; }
+            return (mostFrequentlyMinuteAsleep, maxFreq);
         }
 
     }
