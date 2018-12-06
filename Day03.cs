@@ -1,8 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Advent_of_Code
 {
@@ -29,6 +26,7 @@ namespace Advent_of_Code
             public int Y { get; set; }
         }
 
+        //Turned out not to be useful
         public class CoordinateComparer : IEqualityComparer<Coordinate>
         {
             public bool Equals(Coordinate a, Coordinate b)
@@ -47,17 +45,17 @@ namespace Advent_of_Code
         public static List<Claim> MapToClaims()
         {
             var claims = new List<Claim>();
-            var delimiters = new Char[] { '#', '@', ',', ':', 'x' };
+            var delimiters = new char[] { '#', '@', ',', ':', 'x' };
             foreach(var claim in puzzleInput)
             {
                 var values = claim.Split(delimiters, StringSplitOptions.RemoveEmptyEntries);
                 claims.Add( new Claim
                 {
-                    Id = Int32.Parse(values[0].Trim()),
-                    StartX = Int32.Parse(values[1].Trim()),
-                    StartY = Int32.Parse(values[2].Trim()),
-                    Width = Int32.Parse(values[3].Trim()),
-                    Height = Int32.Parse(values[4].Trim())
+                    Id = int.Parse(values[0].Trim()),
+                    StartX = int.Parse(values[1].Trim()),
+                    StartY = int.Parse(values[2].Trim()),
+                    Width = int.Parse(values[3].Trim()),
+                    Height = int.Parse(values[4].Trim())
                 });
             }
 
@@ -103,6 +101,46 @@ namespace Advent_of_Code
                 }
             }
             return points;
+        }
+
+        public static int Part02()
+        {
+            var claimId = 0;
+            var claims = MapToClaims();
+            
+            foreach (var claim in claims)
+            {
+                var claimHasOverlap = false;
+                var points = GetPoints(claim);
+                foreach (var point in points)
+                {
+                    var pointValue = Grid[point.X, point.Y];
+                    if (pointValue == claim.Id || pointValue == 0)
+                    {
+                        //Do Nothing;
+                    }
+                    else if(pointValue == -1)
+                    {
+                        //Overlapp
+                        claimHasOverlap = true;
+                        break;
+                    }
+                    else
+                    {
+                        Console.WriteLine($"Wtf happened at {point.X} , {point.Y}? Expected Id {claim.Id} but instead found {pointValue}");
+                        break;
+                    }
+                }
+
+                if (!claimHasOverlap)
+                {
+                    claimId = claim.Id;
+                    break;
+                }
+            }
+
+
+            return claimId;
         }
 
     }
